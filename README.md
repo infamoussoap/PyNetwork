@@ -21,3 +21,5 @@ There are many more things you can implement. From easiest to hardest,
 2) The convolutional layer is the most difficult to code. You do not need to implement this, but I will be very impressed if you can.
 3) To make sure the output from your GPU code is correct, you should check them against the output from the given CPU code. An example can be seen in the "Check Dense Layer" notebook.
 4) In the sequential class, we use `x_train[index[start:end]]` to perform training on the batches. But this is not a contiguous array, and PyOpenCL will raise an error.
+
+Colab Link for PyOpenCL: https://colab.research.google.com/drive/15yk8JbY-GadZhyUDyb1MLAokatYhJ0PQ?usp=sharing
