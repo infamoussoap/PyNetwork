@@ -30,7 +30,7 @@ class Dense(Layer):
         It is assumed that the input to this layer is a flattened vector. As such, when passing
         a multidimensional input, use a `flatten` layer first
     """
-    def __init__(self, hidden_nodes, activation_function, l2=0.0, *arg, activation_kwargs=None, **kwargs):
+    def __init__(self, hidden_nodes, activation_function, l1=0.0, l2=0.0, *arg, activation_kwargs=None, **kwargs):
         """ A fully connected layer
 
             Parameters
@@ -55,6 +55,7 @@ class Dense(Layer):
         self.basis = None
         self.coeffs = None
         
+        self.l1 = l1
         self.l2 = l2
 
         self.built = False
@@ -173,7 +174,13 @@ class Dense(Layer):
         """
         check_layer(self)
 
-        self.W -= weight_updates + self.l2 * self.W
+        regularization_grad = 0
+        if self.l1 > 0:
+            regularization_grad += self.l1 * np.sign(self.W)
+        if self.l2 > 0:
+            regularization_grad += self.l2 * self.W
+
+        self.W -= weight_updates + regularization_grad
         self.b -= bias_updates
 
     def get_weights(self):
