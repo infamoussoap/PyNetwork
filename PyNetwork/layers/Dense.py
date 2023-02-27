@@ -30,7 +30,7 @@ class Dense(Layer):
         It is assumed that the input to this layer is a flattened vector. As such, when passing
         a multidimensional input, use a `flatten` layer first
     """
-    def __init__(self, hidden_nodes, activation_function, l1=0.0, l2=0.0, *arg, activation_kwargs=None, **kwargs):
+    def __init__(self, hidden_nodes, activation_function, l1=0.0, l2=0.0, trainable_mask=None, activation_kwargs=None, **kwargs):
         """ A fully connected layer
 
             Parameters
@@ -49,8 +49,15 @@ class Dense(Layer):
 
         self.output_shape = None
         self.input_shape = None
+        
         self.W = None
         self.b = None
+        
+        if trainable_mask is not None:
+            assert isinstance(trainable_mask, np.ndarray)
+            self.trainable_mask = trainable_mask.astype(bool) 
+        else:
+            self.trainable_mask = None
 
         self.basis = None
         self.coeffs = None
@@ -77,6 +84,11 @@ class Dense(Layer):
         limit = np.sqrt(6 / (np.prod(self.input_shape) + np.prod(self.output_shape)))
         self.W = np.random.uniform(low=-limit, high=limit, size=(*self.output_shape, *previous_output_shape))
         self.b = np.zeros(self.output_shape)
+        
+        if self.trainable_mask is not None:
+            assert self.trainable_mask.shape == self.W.shape, f"Trainable mask {self.trainable_mask.shape} must have the " \
+                                                              f"same shape as the weight {self.W.shape}"                                                  
+            
 
         self.built = True
 
@@ -180,7 +192,11 @@ class Dense(Layer):
         if self.l2 > 0:
             regularization_grad += self.l2 * self.W
 
-        self.W -= weight_updates + regularization_grad
+        if self.trainable_mask is None:
+            self.W -= (weight_updates + regularization_grad)
+        else:
+            self.W -= (weight_updates + regularization_grad) * self.trainable_mask
+            
         self.b -= bias_updates
 
     def get_weights(self):
