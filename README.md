@@ -5,7 +5,6 @@ It implements four standard layers: (1) BatchNorm, (2) Dense, (3) Convolutional,
 
 ### Your Job
 PyNetwork implements all the necessary building blocks required for neural networks. Your job is to 
-
 1) Get it working on the GPU. To do this, use PyOpenCL to rewrite the layers, optimizers, and functions so they can work on the GPU.
 2) Implement l1 and l2 regularization for the layers. An example of l1 & l2 regularization can be seen in the dense layer.
 3) Ability to set weights as being trainable or non-trainable. An example can be seen in the dense layer. This is required to explore the lottery ticket hypothesis. (This is much easier than it sounds)
@@ -15,6 +14,7 @@ There are many more things you can implement. From easiest to hardest,
 1) Different initializations for the layers (see [link](https://www.tensorflow.org/api_docs/python/tf/keras/initializers))
 2) Different optimizers (see [link](https://www.tensorflow.org/api_docs/python/tf/keras/optimizers))
 3) Different layers (see [link](https://www.tensorflow.org/api_docs/python/tf/keras/layers))
+4) [Non-sequential network](https://machinelearningmastery.com/keras-functional-api-deep-learning/), these are multiple networks which run in parallel and can be split over multiple GPUs. These parallel networks are then merged together through a concatenate layer. Essentially, this transforms the linear path of the sequential model into a graph like structure. 
 
 ### Helpful Tips
 1) Start off with implementing the Dense layer into the GPU. Once you have done that, implementing the code for the other parts of the code should be easier.
