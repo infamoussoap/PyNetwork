@@ -5,6 +5,7 @@ from PyNetwork.layers import Layer
 from PyNetwork import get_error_function, get_metric_function
 from PyNetwork.optimizers import Optimizer, get_optimizer
 from PyNetwork.layers import Flatten, Input, BatchNorm
+from .utils import buffer_str
 
 
 class Sequential:
@@ -168,12 +169,6 @@ class Sequential:
     def summary(self):
         """ Prints a summary of the layers in the `sequential` class
         """
-
-        def buffer_str(input_str, max_buffer=30):
-            if len(input_str) < max_buffer:
-                return input_str + ' ' * (max_buffer - len(input_str))
-            return input_str
-
         max_str_len = max([len(layer.summary_()[0]) for layer in self.layers.values()])
 
         for layer in self.layers.values():
