@@ -17,4 +17,5 @@ There are many more things you can implement. From easiest to hardest,
 3) Different layers (see [link](https://www.tensorflow.org/api_docs/python/tf/keras/layers))
 
 ### Helpful Tips
-In the sequential class, we use `x_train[index[start:end]]` to perform training on the batches. But this is not a contiguous array, and PyOpenCL will raise an error.
+1) To make sure the output from your GPU code is correct, you should check them against the output from the given CPU code. An example can be seen in the "Check Dense Layer" notebook.
+2) In the sequential class, we use `x_train[index[start:end]]` to perform training on the batches. But this is not a contiguous array, and PyOpenCL will raise an error.
