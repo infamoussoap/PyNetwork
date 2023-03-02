@@ -47,6 +47,51 @@ class Sequential:
             raise TypeError('Only instances of Layer can be added to the sequential class.')
 
         self.layers[self.n + 1] = layer
+        
+    def build(self, loss_function, optimizer, metrics=None):
+        """ Once the model layers have been added this method must be called to initialise
+            all the `sequential_layer` classes
+
+            loss_function : str
+                The loss function
+            metrics : str, optional
+                The name of the function to judge performance of the model
+        """
+
+        if isinstance(optimizer, Optimizer):
+            self.optimizer_bias = optimizer
+            self.optimizer_weights = self.optimizer_bias.new_instance()
+        elif isinstance(optimizer, str):
+            self.optimizer_bias = get_optimizer(optimizer)
+            self.optimizer_weights = self.optimizer_bias.new_instance()
+        else:
+            raise ValueError("optimizer must be an instance of Optimizer or str")
+
+        self.loss_function = loss_function
+        self.metric_function = metrics
+
+        previous_output_shape = None
+        for i in range(1, self.n + 1):
+            layer = self.layers[i]
+
+            layer.build(previous_output_shape)
+            previous_output_shape = layer.output_shape
+        
+    def _validate_x_shape(self, x_shape, name):
+        input_shape = self.layers[1].input_shape
+        target_shape = (-1, *input_shape)
+        
+        assert len(x_shape) > 1, f"{name} has shape {x_shape} but {target_shape} was expected. Try {name}.reshape({target_shape})."
+        assert input_shape == x_shape[1:], f"{name} has shape {x_shape} but {target_shape} was expected. Try {name}.reshape({target_shape})." 
+                
+    def _validate_y_shape(self, y_shape, name):
+        output_shape = self.layers[self.n].output_shape
+        target_shape = (-1, *output_shape)
+        
+        if len(y_shape) == 1: 
+            assert len(output_shape == 1) and output_shape[0] == 1, f"{name} has shape {y_shape} but {target_shape} was expected. Try {name}.reshape({target_shape})."
+        else:
+            assert output_shape == y_shape[1:], f"{name} has shape {y_shape} but {target_shape} was expected. Try {name}.reshape({target_shape})."
 
     def predict(self, x_train, output_only=True):
         """ Forward propagate the input through the layers
@@ -75,6 +120,7 @@ class Sequential:
                 The second dictionary will store the outputs of all layers after it has passed through the
                 activation function.
         """
+        self._validate_x_shape(x_train.shape, "x_train")
 
         if output_only:
             working_z = x_train
@@ -109,6 +155,9 @@ class Sequential:
             str
                 The error
         """
+        self._validate_x_shape(x_test.shape, "x_test")
+        self._validate_y_shape(y_test.shape, "y_test")
+        
         prediction = self.predict(x_test)
 
         loss_val = self.loss(prediction, y_test)
@@ -142,6 +191,8 @@ class Sequential:
                 If set to `True` then the model performance will be printed after each epoch
 
         """
+        self._validate_x_shape(x_train.shape, "x_train")
+        self._validate_y_shape(y_train.shape, "y_train")
 
         training_length = len(x_train)
         if batch_size is None:
@@ -175,35 +226,6 @@ class Sequential:
             layer_type = buffer_str(layer.summary_()[0], max_buffer=max_str_len + 3)
             layer_out = layer.summary_()[1]
             print(f'{layer_type} :    {layer_out}')
-
-    def build(self, loss_function, optimizer, metrics=None):
-        """ Once the model layers have been added this method must be called to initialise
-            all the `sequential_layer` classes
-
-            loss_function : str
-                The loss function
-            metrics : str, optional
-                The name of the function to judge performance of the model
-        """
-
-        if isinstance(optimizer, Optimizer):
-            self.optimizer_bias = optimizer
-            self.optimizer_weights = self.optimizer_bias.new_instance()
-        elif isinstance(optimizer, str):
-            self.optimizer_bias = get_optimizer(optimizer)
-            self.optimizer_weights = self.optimizer_bias.new_instance()
-        else:
-            raise ValueError("optimizer must be an instance of Optimizer or str")
-
-        self.loss_function = loss_function
-        self.metric_function = metrics
-
-        previous_output_shape = None
-        for i in range(1, self.n + 1):
-            layer = self.layers[i]
-
-            layer.build(previous_output_shape)
-            previous_output_shape = layer.output_shape
 
     @property
     def loss(self):
