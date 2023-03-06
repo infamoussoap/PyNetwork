@@ -23,7 +23,7 @@ There are many more things you can implement. From easiest to hardest,
 4) In the sequential class, we use `x_train[index[start:end]]` to perform training on the batches. But this is not a contiguous array, and PyOpenCL will raise an error.
 
 Colab Links 
-Compilers: https://colab.research.google.com/drive/1sCuZDfE_hTqZFDyYKkX1DvZLlZubE48A?usp=sharing
-Cupy: https://colab.research.google.com/drive/13ulTBbtxe-Xs35VxSjd1mu0j_zlQpVCy?usp=sharing
-Why GPUs: https://colab.research.google.com/drive/1NC4rpujkRiBSesPAJ_DxRcQns7wU0Pb-?usp=sharing
-PyOpenCL: https://colab.research.google.com/drive/15yk8JbY-GadZhyUDyb1MLAokatYhJ0PQ?usp=sharing
+- Compilers: https://colab.research.google.com/drive/1sCuZDfE_hTqZFDyYKkX1DvZLlZubE48A?usp=sharing
+- Cupy: https://colab.research.google.com/drive/13ulTBbtxe-Xs35VxSjd1mu0j_zlQpVCy?usp=sharing
+- Why GPUs: https://colab.research.google.com/drive/1NC4rpujkRiBSesPAJ_DxRcQns7wU0Pb-?usp=sharing
+- PyOpenCL: https://colab.research.google.com/drive/15yk8JbY-GadZhyUDyb1MLAokatYhJ0PQ?usp=sharing
